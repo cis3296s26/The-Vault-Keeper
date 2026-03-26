@@ -19,7 +19,7 @@ def home():
     <h1>The Vault Keeper PoC</h1>
     <p>Status: <strong>Online</strong></p>
     <p>Database: <strong>Connected</strong></p>
-    <p>This is the proof of concept for the Software Design proposal.</p>
+    <p>This is the main page for The Vault Keeper Project!</p>
     """
 
 if __name__ == '__main__':
