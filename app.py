@@ -16,7 +16,7 @@ def init_db():
 @app.route('/')
 def home():
     return """
-    <h1>The Vault Keeper PoC</h1>
+    <h1>The Vault Keeper </h1>
     <p>Status: <strong>Online</strong></p>
     <p>Database: <strong>Connected</strong></p>
     <p>This is the main page for The Vault Keeper Project!</p>
