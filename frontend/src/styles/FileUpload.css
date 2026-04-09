@@ -1,0 +1,28 @@
+#FileUpload {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+#FileUpload input[type="file"] {
+    color: #ffffff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+}
+
+#FileUpload button {
+    background-color: #6b3a7d;
+    color: #ffffff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#FileUpload button:hover {
+    background-color: #7d4591;
+}
