@@ -1,6 +1,3 @@
-
-
-
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, UploadFile, Query
 from models.File import File as FileModel
