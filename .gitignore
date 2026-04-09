@@ -13,6 +13,7 @@ frontend/.vite/
 .env.*.local
 
 # Python virtual environment
+.venv/
 venv/
 env/
 
