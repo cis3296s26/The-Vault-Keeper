@@ -11,13 +11,43 @@ from services import storage
 router = APIRouter()
 
 @router.get("/")
+# Everything up to the : is the function signature (parameters + what to return)
+# Assigned value inside the signature = default value. E.g. limit defaults to 100
 def read_files(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
-) -> list[FileModel]:
-    files = session.exec(select(FileModel).offset(offset).limit(limit)).all()
-    return files
+
+    # New parameters for file filtering and sorting
+    sort_by: str = "created_at", # Database column to sort by
+    order: str = "descending", # Sorting order (descending or ascending)
+    search: str = "", # Filter by file name
+) -> list[FileModel]: # Return a list of files from the database (FastAPI converts each FileModel into a JSON)
+    
+    query = select(FileModel) # Fetch all files from the database
+    
+    # Filter query; only keep files that match the search string
+    if search:
+        query = query.where(FileModel.name.contains(search))
+    
+    # Map the sort_by string (name, size, or created_at) to an actual database column
+    sort_by_column_map = {
+        "name": FileModel.name,
+        "size": FileModel.name,
+        "created_at": FileModel.created_at
+    }
+    # Get the database column that sort_by maps to
+    DB_column = sort_by_column_map.get(sort_by, FileModel.created_at)
+
+    # Apply sorting direction to query
+    if order == "descending":
+        query = query.order_by(DB_column.desc())
+    else:
+        query = query.order_by(DB_column.asc())
+
+    # Apply offset, limit, and execute the query
+    query = query.offset(offset).limit(limit)
+    return session.exec(query).all()
 
 @router.post("/upload")
 def upload(file: UploadFile, session: SessionDep) -> FileModel:

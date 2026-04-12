@@ -1,6 +1,9 @@
 import secrets
 import string
 
+# File purpose: implementation of a random password generator function in Python.
+
+# passwordGenerator() takes an integer n as input, and outputs a string of n random characters.
 def passwordGenerator(length: int):
     # The type in variable_name: type = value is optional
     # chars is an iterable string with all letters, digits, and punctuation marks
