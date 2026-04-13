@@ -6,7 +6,7 @@ from sqlmodel import SQLModel, Session, create_engine
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./vault-keeper.db")
 engine = create_engine(DATABASE_URL)
 
 def get_session():
