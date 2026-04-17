@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - UPLOAD_DIR=/app/uploads
+      - DATABASE_URL=sqlite:////app/data/vault-keeper.db
+      - FRONTEND_ORIGIN=http://localhost:5173
+    volumes:
+      - ./data/files:/app/uploads   # uploaded files persist here on the host
+      - ./data:/app/data            # sqlite .db file persists here on the host
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend

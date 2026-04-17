@@ -1,0 +1,19 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Default environment variables (can be overridden in docker-compose)
+ENV UPLOAD_DIR=/app/uploads
+ENV DATABASE_URL=sqlite:////app/data/vault-keeper.db
+
+# Create upload dir at build time as a fallback
+RUN mkdir -p /app/uploads /app/data
+
+EXPOSE 8000
+
+CMD ["fastapi", "run", "main.py", "--port", "8000"]
