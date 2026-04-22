@@ -1,9 +1,9 @@
 import '../styles/FileUpload.css'
 import { useState, useRef } from "react"
-import { uploadFile } from "../api/files"
+import { encryptFile } from "../utils/crypto"
 
 export function FileUpload({ onRefresh }) {
-    const [selectedFile, setSelectedFile] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([])
     const [password, setPassword] = useState('')
     const [protect, setProtect] = useState(false)
     const fileInputRef = useRef(null)
