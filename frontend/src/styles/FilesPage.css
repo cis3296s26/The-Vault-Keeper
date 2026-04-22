@@ -1,0 +1,11 @@
+#FilesPage h2 {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#FilesPage .files-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+}
