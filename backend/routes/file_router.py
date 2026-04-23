@@ -49,9 +49,10 @@ def read_files(
     return session.exec(query).all()
 
 @router.post("/upload")
-def upload(file: UploadFile, session: SessionDep) -> FileModel:
+def upload(file: UploadFile, session: SessionDep, salt: str | None = Form(default = None), iv: str | None = Form(default = None)) -> FileModel:
+    is_protected = salt is not None and iv is not None
     file_key = storage.upload_file(file.file, file.filename)
-    upload_file = FileModel(name=file.filename, size=file.size, r2_key=file_key)
+    upload_file = FileModel(name=file.filename, size=file.size, r2_key=file_key, is_protected=is_protected, salt=salt, iv=iv)
     session.add(upload_file)
     session.commit()
     session.refresh(upload_file)
@@ -63,7 +64,10 @@ def view_file(file_id: int, session: SessionDep):
     if not file:
         raise HTTPException(status_code=404, detail="File not found")
     # Return a local download URL instead of a presigned R2 URL
-    return {"url": f"/api/files/download/{file.r2_key}"}
+    return {"url": f"/api/files/download/{file.r2_key}",
+        "is_protected": file.is_protected,
+        "salt": file.salt,
+        "iv": file.iv,}
 
 @router.get("/download/{file_key:path}")
 def download_file(file_key: str):
