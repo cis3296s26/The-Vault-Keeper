@@ -45,17 +45,10 @@ For this project the **parallel requests** approach is recommended because it re
 `Promise.all` takes an array of Promises and waits for all of them to finish before continuing. If you have three files, all three uploads start at the same time:
 
 ```javascript
-await Promise.all(files.map(file => uploadSingleFile(file)))
+await Promise.all(files.map(file => uploadFile(file)))
 ```
 
 This is equivalent to clicking "Upload" three times simultaneously, but in code. The UI stays blocked until every upload finishes, so calling `onRefresh()` after `Promise.all` guarantees the file list is already up to date.
-
-### Password protection and multiple files
-Password protection was added before multi-file upload. The current `handleUpload` builds `FormData` inline and calls `encryptFile` before sending — it does not use the `uploadFile` helper from `files.js`.
-
-When uploading multiple files with a password, the same password is applied to every file in the batch (one password field, many files). Each file still gets its own randomly generated salt and IV, so the encryption is independent per file even though the password is shared. This matches how most password-manager-style tools work: you set one password for a batch, not one per file.
-
-To keep the loop clean, extract the per-file send logic into a local helper inside `handleUpload` (see Step 2).
 
 ### Showing selected file names
 Because users can select many files, a simple `<input>` alone does not give useful feedback. Rendering the list of selected filenames under the input helps users confirm they chose the right files before clicking Upload.
@@ -64,19 +57,21 @@ Because users can select many files, a simple `<input>` alone does not give usef
 
 ## Implementation Plan
 
-The parallel-requests approach keeps the backend entirely unchanged and only modifies `FileUpload.jsx`.
+The parallel-requests approach keeps the backend entirely unchanged and only modifies `FileUpload.jsx` and `files.js`.
 
-> **Note:** The password-protection feature was implemented first and changed `FileUpload.jsx` significantly. The "Before" snapshots below reflect the current state of the file after that change, not the original single-file version.
+### Step 1 — Add `multiple` to the file input in FileUpload.jsx
 
-### Step 1 — Change `selectedFile` to `selectedFiles` in FileUpload.jsx
+Open [frontend/src/components/FileUpload.jsx](../frontend/src/components/FileUpload.jsx) and change the `input` element and the state variable.
 
-Open [frontend/src/components/FileUpload.jsx](../frontend/src/components/FileUpload.jsx) and change the state variable and the `input` element.
-
-**Before (current state after password-protection work):**
+**Before:**
 ```jsx
 const [selectedFile, setSelectedFile] = useState(null)
 
-<input type="file" ref={fileInputRef} onChange={e => setSelectedFile(e.target.files[0])} />
+<input
+    type="file"
+    ref={fileInputRef}
+    onChange={(e) => setSelectedFile(e.target.files[0])}
+/>
 ```
 
 **After:**
@@ -85,7 +80,7 @@ const [selectedFiles, setSelectedFiles] = useState([])
 
 <input
     type="file"
-    multiple
+    multiple                                              // allow picking many files
     ref={fileInputRef}
     onChange={(e) => setSelectedFiles(Array.from(e.target.files))}
 />
@@ -95,28 +90,12 @@ const [selectedFiles, setSelectedFiles] = useState([])
 
 ### Step 2 — Update `handleUpload` to loop over all files
 
-The current `handleUpload` builds `FormData` inline and encrypts the file when `protect && password` is set. To support multiple files, extract the per-file logic into a local helper and loop over `selectedFiles` with `Promise.all`.
-
-**Before (current state after password-protection work):**
+**Before:**
 ```javascript
 const handleUpload = async () => {
     if (!selectedFile) return
-
-    const formData = new FormData()
-
-    if (protect && password) {
-        const buffer = await selectedFile.arrayBuffer()
-        const { encrypted, salt, iv } = await encryptFile(buffer, password)
-        formData.append('file', new Blob([encrypted]), selectedFile.name)
-        formData.append('salt', salt)
-        formData.append('iv', iv)
-    } else {
-        formData.append('file', selectedFile)
-    }
-    await fetch(`${BASE_URL}/api/files/upload`, { method: 'POST', body: formData })
+    await uploadFile(selectedFile)
     setSelectedFile(null)
-    setPassword('')
-    setProtect(false)
     fileInputRef.current.value = ''
     onRefresh()
 }
@@ -126,25 +105,8 @@ const handleUpload = async () => {
 ```javascript
 const handleUpload = async () => {
     if (selectedFiles.length === 0) return
-
-    const uploadOne = async (file) => {
-        const formData = new FormData()
-        if (protect && password) {
-            const buffer = await file.arrayBuffer()
-            const { encrypted, salt, iv } = await encryptFile(buffer, password)
-            formData.append('file', new Blob([encrypted]), file.name)
-            formData.append('salt', salt)
-            formData.append('iv', iv)
-        } else {
-            formData.append('file', file)
-        }
-        return fetch(`${BASE_URL}/api/files/upload`, { method: 'POST', body: formData })
-    }
-
-    await Promise.all(selectedFiles.map(uploadOne))
+    await Promise.all(selectedFiles.map(file => uploadFile(file)))
     setSelectedFiles([])
-    setPassword('')
-    setProtect(false)
     fileInputRef.current.value = ''
     onRefresh()
 }
@@ -168,42 +130,23 @@ Add a small file list under the input so the user can see what they selected:
 
 ### Step 4 — No backend changes needed
 
-The existing `POST /api/files/upload` endpoint in [backend/routes/file_router.py](../backend/routes/file_router.py) already accepts an optional `salt` and `iv` form field (added during the password-protection work). Since the parallel approach sends one request per file, and each request has the same shape as a single-file upload, nothing in the backend changes.
+The existing `POST /api/files/upload` endpoint in [backend/routes/file_router.py](../backend/routes/file_router.py) handles one file per request. Since the parallel approach sends one request per file, nothing in the backend changes.
 
 ### Complete updated FileUpload.jsx
 
 ```jsx
 import '../styles/FileUpload.css'
 import { useState, useRef } from 'react'
-import { encryptFile } from '../utils/crypto'
+import { uploadFile } from '../api/files'
 
 export function FileUpload({ onRefresh }) {
     const [selectedFiles, setSelectedFiles] = useState([])
-    const [password, setPassword] = useState('')
-    const [protect, setProtect] = useState(false)
     const fileInputRef = useRef(null)
 
     const handleUpload = async () => {
         if (selectedFiles.length === 0) return
-
-        const uploadOne = async (file) => {
-            const formData = new FormData()
-            if (protect && password) {
-                const buffer = await file.arrayBuffer()
-                const { encrypted, salt, iv } = await encryptFile(buffer, password)
-                formData.append('file', new Blob([encrypted]), file.name)
-                formData.append('salt', salt)
-                formData.append('iv', iv)
-            } else {
-                formData.append('file', file)
-            }
-            return fetch(`${BASE_URL}/api/files/upload`, { method: 'POST', body: formData })
-        }
-
-        await Promise.all(selectedFiles.map(uploadOne))
+        await Promise.all(selectedFiles.map(file => uploadFile(file)))
         setSelectedFiles([])
-        setPassword('')
-        setProtect(false)
         fileInputRef.current.value = ''
         onRefresh()
     }
@@ -222,18 +165,6 @@ export function FileUpload({ onRefresh }) {
                         <li key={i}>{f.name}</li>
                     ))}
                 </ul>
-            )}
-            <label>
-                <input type="checkbox" checked={protect} onChange={e => setProtect(e.target.checked)} />
-                Password protect
-            </label>
-            {protect && (
-                <input
-                    type="password"
-                    placeholder="Enter password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                />
             )}
             <button onClick={handleUpload}>Upload</button>
         </div>
@@ -278,7 +209,7 @@ export const uploadFiles = async (files) => {
 }
 ```
 
-This approach is more efficient at scale (one round-trip, one database transaction) but requires adding the new endpoint. For the current project stage the parallel single-file approach is sufficient. Note that extending this endpoint to support encryption would also require passing `salt` and `iv` per file, which is more complex since `FormData` does not have a natural way to associate per-file metadata.
+This approach is more efficient at scale (one round-trip, one database transaction) but requires adding the new endpoint. For the current project stage the parallel single-file approach is sufficient.
 
 ---
 
@@ -289,10 +220,8 @@ PARALLEL APPROACH (recommended for now)
 User opens file picker → selects 3 files
     → FileList converted to Array, stored in selectedFiles state
     → selected file names rendered below the input
-User optionally checks "Password protect" and enters a password
 User clicks Upload
     → Promise.all starts 3 concurrent POST /api/files/upload requests
-    → each file is independently encrypted (own salt + iv) if protect is set
     → each runs the existing upload handler independently
     → all 3 finish → onRefresh() fetches updated file list
     → table shows 3 new rows

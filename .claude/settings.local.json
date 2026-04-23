@@ -2,9 +2,7 @@
   "permissions": {
     "allow": [
       "Read(//c/Users/Tomas/.claude/projects/c--Users-Tomas-OneDrive---Temple-University-Software-Design--CIS-3296--Semester-Project-The-Vault-Keeper/**)",
-      "Read(//c/Users/Tomas/.claude/projects/c--Users-Tomas-OneDrive---Temple-University-Software-Design--CIS-3296--Semester-Project-The-Vault-Keeper/memory/**)",
-      "Bash(git merge *)",
-      "Bash(echo \"exit: $?\")"
+      "Read(//c/Users/Tomas/.claude/projects/c--Users-Tomas-OneDrive---Temple-University-Software-Design--CIS-3296--Semester-Project-The-Vault-Keeper/memory/**)"
     ]
   }
 }
