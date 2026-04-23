@@ -10,17 +10,10 @@ def get_app() -> FastAPI:
 
     # Allow the frontend origin to be configured via environment variable,
     # falling back to the default local Vite dev server ports.
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            frontend_origin,
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://127.0.0.1:5173",  # add this
-            "http://127.0.0.1:5174",
-        ],
-        allow_credentials=True,
+        allow_origins=["*",],
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )
