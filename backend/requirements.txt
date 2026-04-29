@@ -3,3 +3,7 @@ sqlmodel
 python-dotenv
 psycopg2-binary
 boto3
+pytest
+pytest-cov
+pytest-html
+httpx
