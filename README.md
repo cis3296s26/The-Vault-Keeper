@@ -29,7 +29,7 @@ To do this on Windows:
 1. Open the folder in File Explorer so you can see the `docker-compose.yml` file inside
 2. Click the address bar at the top of the File Explorer window to highlight the folder path, then copy it (Ctrl + C)
 3. Click the Windows search bar at the bottom of your screen, type `cmd`, and click **Command Prompt**
-4. In the Command Prompt window, type `cd` followed by a space, then paste the path you copied — make sure to wrap it in quotes — and press Enter:
+4. In the Command Prompt window, type `cd` followed by a space, then paste the path you copied. Make sure to wrap it in quotes and press Enter:
 
 ```
 cd "C:\Users\YourName\my-vault"
