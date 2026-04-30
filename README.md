@@ -123,9 +123,9 @@ A **port** is like a numbered door on your computer that a specific service list
 | Frontend | `5173` | http://localhost:5173      |
 | Backend  | `8000` | http://localhost:8000/docs |
 
-The **frontend** (port `5173`) is the visual interface you use in your browser — the file table, upload button, and everything you see and click on.
+The **frontend** (port `5173`) is the visual interface you use in your browser like the file table, upload button, and everything you see and click on.
 
-The **backend** (port `8000`) is the engine running behind the scenes. It handles actually storing, retrieving, and deleting your files. You never need to interact with it directly — the frontend talks to it automatically.
+The **backend** (port `8000`) is the engine running behind the scenes. It handles actually storing, retrieving, and deleting your files. You never need to interact with it directly.
 
 That said, the backend also comes with a built-in **API explorer**, accessible at `http://localhost:8000/docs`. This is an interactive webpage (provided automatically by the backend framework) that lists every available operation the backend supports: things like uploading a file, listing files, or deleting one. You can test these operations directly from the page without touching the frontend. It's mainly useful for debugging or curiosity, and most users will never need it.
 
