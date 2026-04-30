@@ -1,8 +1,7 @@
 # The Vault Keeper
 
-**The Vault Keeper** is a self-hosted, private cloud storage platform that gives you full control over your files — no third-party data mining, no subscriptions, no surprises. Upload, manage, and download your files through a clean web interface, all running on your own machine.
+**The Vault Keeper** is a self-hosted, private cloud storage platform that gives you full control over your files; there's no third-party data mining and no subscriptions. Upload, manage, and download your files through a clean web interface, all running on your own machine.
 
----
 
 ## Requirements
 
@@ -10,9 +9,6 @@ Before you begin, make sure you have the following installed:
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes both Docker and Docker Compose)
 
-That's it. No Python, no Node.js, no manual dependencies.
-
----
 
 ## Quick Start
 
@@ -24,6 +20,7 @@ Place it in its own folder, for example:
 my-vault/
 └── docker-compose.yml
 ```
+
 
 **2. Open a terminal and navigate to the folder where you saved the file.**
 
@@ -44,7 +41,7 @@ Once you're in the right folder, run:
 docker compose up
 ```
 
-Docker will pull the latest images and start both the backend and frontend automatically. The first run may take a minute or two to download everything. You'll see a stream of log messages — that's normal. The app is ready when the messages slow down and you see output from both the frontend and backend services.
+Docker will pull the latest images and start both the backend and frontend automatically. The first run may take a minute or two to download everything. You'll see a stream of log messages, that's normal. The app is ready when the messages slow down and you see output from both the frontend and backend services.
 
 **3. Open your browser and go to:**
 
@@ -58,7 +55,7 @@ Your Vault Keeper is ready to use.
 
 ## Stopping the App
 
-Go back to the Command Prompt window you opened in Step 2 — the one showing the running log messages. Press `Ctrl + C` to stop the app. You should see the services begin to shut down.
+Go back to the Command Prompt window you opened in Step 2; the one showing the running log messages. Press `Ctrl + C` to stop the app. You should see the services begin to shut down.
 
 If that does not work, or if you closed that window, open a new Command Prompt, navigate back to your vault folder the same way as before (cd "your\folder\path"), and run:
 
@@ -105,7 +102,7 @@ Open a Command Prompt and navigate to your vault folder the same way as in Step 
 docker compose pull
 ```
 
-This downloads the latest version of the Vault Keeper images from the internet. Think of it like checking for updates — it replaces the old app code with the newest version.
+This downloads the latest version of the Vault Keeper images from the internet.
 
 ```bash
 docker compose up
@@ -130,19 +127,19 @@ The **frontend** (port `5173`) is the visual interface you use in your browser �
 
 The **backend** (port `8000`) is the engine running behind the scenes. It handles actually storing, retrieving, and deleting your files. You never need to interact with it directly — the frontend talks to it automatically.
 
-That said, the backend also comes with a built-in **API explorer**, accessible at `http://localhost:8000/docs`. This is an interactive webpage (provided automatically by the backend framework) that lists every available operation the backend supports — things like uploading a file, listing files, or deleting one. You can test these operations directly from the page without touching the frontend. It's mainly useful for debugging or curiosity, and most users will never need it.
+That said, the backend also comes with a built-in **API explorer**, accessible at `http://localhost:8000/docs`. This is an interactive webpage (provided automatically by the backend framework) that lists every available operation the backend supports: things like uploading a file, listing files, or deleting one. You can test these operations directly from the page without touching the frontend. It's mainly useful for debugging or curiosity, and most users will never need it.
 
 ---
 
 ## Accessing from Other Devices on Your Network
 
-Because both ports (`5173` and `8000`) are bound to all network interfaces by default, any device on the same local network can reach your Vault Keeper — no extra configuration needed.
+Because both ports (`5173` and `8000`) are bound to all network interfaces by default, any device on the same local network can reach your Vault Keeper.
 
 **1. Find the local IP address of the machine running Docker.**
 
 You need to do this on the machine that is actually running the app (i.e. where you ran `docker compose up`). Open a Command Prompt or terminal on that machine and run one of the following commands depending on your operating system:
 
-- **Windows:** Open Command Prompt (search `cmd` in the Windows search bar) and type `ipconfig`, then press Enter. Look for the line that says **IPv4 Address** under your active network adapter — it will look something like `192.168.1.50`.
+- **Windows:** Open Command Prompt (search `cmd` in the Windows search bar) and type `ipconfig`, then press Enter. Look for the line that says **IPv4 Address** under your active network adapter, it will look something like `192.168.1.50`.
 - **macOS:** Open Terminal (search for it in Spotlight) and run `ifconfig`. Look for the `inet` line under `en0` (Wi-Fi) or `en1`.
 - **Linux:** Open a terminal and run `ip a`. Look for the `inet` line under your active network interface (often `eth0` or `wlan0`).
 
@@ -156,7 +153,7 @@ For example: `http://192.168.1.50:5173`
 
 The frontend is configured to automatically talk to the backend at the same IP address, so uploads, downloads, and deletes will all work normally without any extra setup.
 
-> **Note:** This only works within your local network. The Vault Keeper is not exposed to the internet unless you explicitly configure port forwarding on your router — which is not recommended without additional security measures.
+> **Note:** This only works within your local network. The Vault Keeper is not exposed to the internet unless you explicitly configure port forwarding on your router, which is not recommended without additional security measures.
 
 ---
 
