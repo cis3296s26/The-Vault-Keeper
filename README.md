@@ -34,6 +34,12 @@ To do this on Windows:
 ```
 cd "C:\Users\YourName\my-vault"
 ```
+To do this on Mac:
+
+1. Navigate to the folder that contains your `docker-compose.yml` file inside, but don't go into it
+2. Right click on the folder and select 'New Terminal at Folder'
+3. If you do not see that option, open the terminal by searching for it in Spotlight Search or your Applications Folder
+4. Type `cd` followed by a space, then drag and drop the folder containing your `docker-compose.yml` file inside and press Retrun
 
 Once you're in the right folder, run:
 
@@ -87,7 +93,6 @@ my-vault/
 - **View and download** your stored files directly from the browser
 - **Delete files** with a confirmation prompt to prevent accidents
 - **Search** your files by name
-- **Sort** files by name or upload date, in ascending or descending order
 - **Paginated file table** for comfortable browsing when your vault grows
 
 ---
